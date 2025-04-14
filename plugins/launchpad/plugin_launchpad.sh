@@ -56,18 +56,25 @@ function _cloneRepo(){
 # Create the .env file
 function _setEnvVars(){
   case $_network in
-      mainnet)
+      Mainnet)
         ohai "Creating .env for mainnet: cat \"${PLUGIN_PATH}/$MAINNET_ENV_VARS_FILE\" > \"${LAUNCHPAD_SOURCE_DIR}/.env\""
         cat "${PLUGIN_PATH}/$MAINNET_ENV_VARS_FILE" > "${LAUNCHPAD_SOURCE_DIR}/.env"
+        HOST=$(hostname -I | awk '{print $1}') # Get the host's IP address
+        REACT_APP_RPC_URL="https://$HOST:8545" # would https://localhost:8545 work?
+        echo "REACT_APP_RPC_URL=$REACT_APP_RPC_URL" >> "${LAUNCHPAD_SOURCE_DIR}/.env"
       ;;
-      hoodi)
+      Hoodi)
         ohai "Creating .env for testnet: cat \"${PLUGIN_PATH}/$TESTNET_ENV_VARS_FILE\" > \"${LAUNCHPAD_SOURCE_DIR}/.env\""
         cat "${PLUGIN_PATH}/$TESTNET_ENV_VARS_FILE" > "${LAUNCHPAD_SOURCE_DIR}/.env"
+        HOST=$(hostname -I | awk '{print $1}') # Get the host's IP address
+        REACT_APP_RPC_URL="https://$HOST:8545" # would https://localhost:8545 work?
+        echo "REACT_APP_RPC_URL=$REACT_APP_RPC_URL" >> "${LAUNCHPAD_SOURCE_DIR}/.env"
       ;;
         "Network Syncing")
         echo "Network still sycning. Try again later."
-        ohai "Creating .env for testnet: cat \"${PLUGIN_PATH}/$TESTNET_ENV_VARS_FILE\" > \"${LAUNCHPAD_SOURCE_DIR}/.env\""
-        cat "${PLUGIN_PATH}/$TESTNET_ENV_VARS_FILE" > "${LAUNCHPAD_SOURCE_DIR}/.env"
+        # Added for testing on nodes that are not synced
+        # ohai "Creating .env for testnet: cat \"${PLUGIN_PATH}/$TESTNET_ENV_VARS_FILE\" > \"${LAUNCHPAD_SOURCE_DIR}/.env\""
+        # cat "${PLUGIN_PATH}/$TESTNET_ENV_VARS_FILE" > "${LAUNCHPAD_SOURCE_DIR}/.env"
       ;;
       *)
         echo $_network
@@ -131,7 +138,11 @@ function _doStart(){
   ohai "Starting Launchpad"
   cd $LAUNCHPAD_BUILD_DIR
   # Start the plugin with sudo, log PID and errors
-  serve -L build > "$LAUNCHPAD_BUILD_DIR/serve.log" 2>&1 & echo $! > "$LAUNCHPAD_BUILD_DIR/serve.pid"
+  serve -L -p 8080 build > "$LAUNCHPAD_BUILD_DIR/serve.log" 2>&1 & echo $! > "$LAUNCHPAD_BUILD_DIR/serve.pid"
+  
+  # Display a whiptail message
+  HOST=$(hostname -I | awk '{print $1}') # Get the host's IP address
+  whiptail --title "Launchpad Started" --msgbox "Available at - \nhttp://$HOSTNAME:8080 \nhttp://$HOST:8080" 10 60
 }
 function _doStop(){
   # Check if the Launchpad directory exists
