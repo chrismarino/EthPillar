@@ -1100,7 +1100,57 @@ while true; do
     esac
 done
 }
+submenuPluginLaunchpad(){
+while true; do
+    getBackTitle
+    # Define the options for the submenu
+    SUBOPTIONS=(
+      1 "Start Launchpad"
+      2 "Stop Launchpad"
+      3 "Edit .env"
+      4 "Upgrade Launchpad"
+      - ""
+      9 "Uninstall Launchpad plugin"
+      - ""
+      99 "Back to main menu"
+    )
 
+    # Display the submenu and get the user's choice
+    SUBCHOICE=$(whiptail --clear --cancel-button "Back" \
+      --backtitle "$BACKTITLE" \
+      --title "Plugin - Locally hosted Ethereum Launchpad" \
+      --menu "Choose one of the following options:" \
+      0 0 0 \
+      "${SUBOPTIONS[@]}" \
+      3>&1 1>&2 2>&3)
+
+    if [ $? -gt 0 ]; then # user pressed <Cancel> button
+        break
+    fi
+
+    # Handle the user's choice from the submenu
+    case $SUBCHOICE in
+      1)
+        runScript plugins/launchpad/plugin_launchpad.sh -s
+        ;;
+      2)
+        runScript plugins/launchpad/plugin_launchpad.sh -x
+        ;;
+      3)
+        runScript plugins/launchpad/plugin_launchpad.sh -e
+        ;;
+      4)
+        runScript plugins/launchpad/plugin_launchpad.sh -u
+        ;;
+      9)
+        runScript plugins/launchpad/plugin_launchpad.sh -r
+        ;;
+      99)
+        break
+        ;;
+    esac
+done
+}
 submenuPlugins(){
 while true; do
     getBackTitle
@@ -1108,6 +1158,7 @@ while true; do
     SUBOPTIONS=(
       1 "Lido CSM Validator: Activate an extra validator service. Re-use this node's EL/CL."
       2 "CSM-Sentinel: Sends notifications for your CSM Node Operator ID. Self-hosted. Docker. Telegram."
+      3 "Locally hosted Launchpad. Access from your local network"
       - ""
       99 "Back to main menu"
     )
@@ -1140,6 +1191,12 @@ while true; do
             runScript plugins/sentinel/plugin_csm_sentinel.sh -i
         fi
         submenuPluginSentinel
+        ;;
+      3)
+        if [[ ! -d /opt/ethpillar/plugin-launchpad ]]; then
+            runScript plugins/launchpad/plugin_launchpad.sh -i
+        fi
+        submenuPluginLaunchpad
         ;;
       99)
         break

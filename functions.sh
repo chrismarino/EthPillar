@@ -98,6 +98,13 @@ get_platform(){
   fi
 }
 
+get_network() {
+    if [[ -z "${NETWORK:-}" ]]; then
+        getNetwork  # Ensure NETWORK is set
+    fi
+    echo "${NETWORK:-hoodi}"  # Default to "hoodi" if NETWORK is unset or empty
+}
+
 print_node_info() {
   current_time=$(date)
   os_descrip=$(grep PRETTY_NAME /etc/os-release | sed 's/PRETTY_NAME=//g')
