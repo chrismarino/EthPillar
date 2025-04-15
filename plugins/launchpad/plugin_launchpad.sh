@@ -60,15 +60,19 @@ function _setEnvVars(){
         ohai "Creating .env for mainnet: cat \"${PLUGIN_PATH}/$MAINNET_ENV_VARS_FILE\" > \"${LAUNCHPAD_SOURCE_DIR}/.env\""
         cat "${PLUGIN_PATH}/$MAINNET_ENV_VARS_FILE" > "${LAUNCHPAD_SOURCE_DIR}/.env"
         HOST=$(hostname -I | awk '{print $1}') # Get the host's IP address
-        REACT_APP_RPC_URL="https://$HOST:8545" # would https://localhost:8545 work?
+        REACT_APP_RPC_URL="http://$HOST:8545" # would https://localhost:8545 work?
         echo "REACT_APP_RPC_URL=$REACT_APP_RPC_URL" >> "${LAUNCHPAD_SOURCE_DIR}/.env"
+        REACT_APP_BEACONCHAIN_URL="http://$HOST:5052" # would https://localhost:8545 work?
+        echo "REACT_APP_BEACONCHAIN_URL=$REACT_APP_BEACONCHAIN_URL" >> "${LAUNCHPAD_SOURCE_DIR}/.env"
       ;;
       Hoodi)
         ohai "Creating .env for testnet: cat \"${PLUGIN_PATH}/$TESTNET_ENV_VARS_FILE\" > \"${LAUNCHPAD_SOURCE_DIR}/.env\""
         cat "${PLUGIN_PATH}/$TESTNET_ENV_VARS_FILE" > "${LAUNCHPAD_SOURCE_DIR}/.env"
         HOST=$(hostname -I | awk '{print $1}') # Get the host's IP address
-        REACT_APP_RPC_URL="https://$HOST:8545" # would https://localhost:8545 work?
+        REACT_APP_RPC_URL="http://$HOST:8545" # would https://localhost:8545 work?
         echo "REACT_APP_RPC_URL=$REACT_APP_RPC_URL" >> "${LAUNCHPAD_SOURCE_DIR}/.env"
+        REACT_APP_BEACONCHAIN_URL="http://$HOST:5052" # would https://localhost:8545 work?
+        echo "REACT_APP_BEACONCHAIN_URL=$REACT_APP_BEACONCHAIN_URL" >> "${LAUNCHPAD_SOURCE_DIR}/.env"
       ;;
         "Network Syncing")
         echo "Network still sycning. Try again later."
